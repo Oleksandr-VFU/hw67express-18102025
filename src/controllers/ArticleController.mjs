@@ -309,4 +309,20 @@ export class ArticleController {
       res.status(500).json({ error: 'Помилка сервера' });
     }
   }
+
+  // GET /articles/cursor - отримання статей з використанням курсора
+  static async getArticlesWithCursor(req, res) {
+    try {
+      const articles = await ArticleModel.getAllWithCursor();
+      
+      res.json({
+        message: `Отримано ${articles.length} статей за допомогою курсора`,
+        method: 'cursor',
+        articles: articles
+      });
+    } catch (error) {
+      console.error('Помилка отримання статей з курсором:', error);
+      res.status(500).json({ error: 'Помилка сервера' });
+    }
+  }
 }

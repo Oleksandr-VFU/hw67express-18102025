@@ -272,4 +272,20 @@ export class UserController {
       res.status(500).json({ error: 'Помилка сервера' });
     }
   }
+
+  // GET /users/cursor - отримання користувачів з використанням курсора
+  static async getUsersWithCursor(req, res) {
+    try {
+      const users = await UserModel.getAllWithCursor();
+      
+      res.json({
+        message: `Отримано ${users.length} користувачів за допомогою курсора`,
+        method: 'cursor',
+        users: users
+      });
+    } catch (error) {
+      console.error('Помилка отримання користувачів з курсором:', error);
+      res.status(500).json({ error: 'Помилка сервера' });
+    }
+  }
 }

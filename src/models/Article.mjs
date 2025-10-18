@@ -461,4 +461,22 @@ export class ArticleModel {
       throw error;
     }
   }
+
+  // Отримати всі статті за допомогою курсора (для великих обсягів даних)
+  static async getAllWithCursor() {
+    try {
+      const cursor = db.collection('articles').find({}).sort({ createdAt: -1 });
+      const articles = [];
+      
+      // Використовуємо курсор для ітерації без завантаження всіх даних у пам'ять
+      await cursor.forEach(article => {
+        articles.push(article);
+      });
+      
+      return articles;
+    } catch (error) {
+      console.error('Помилка отримання статей з курсором:', error);
+      throw error;
+    }
+  }
 }

@@ -11,6 +11,9 @@ router.get('/', UserController.getAllUsers);
 // GET /users/find - розширене читання з фільтрами та проекціями
 router.get('/find', UserController.findUsers);
 
+// GET /users/cursor - отримання користувачів з використанням курсора
+router.get('/cursor', UserController.getUsersWithCursor);
+
 // POST /users - створити нового користувача
 router.post('/', UserController.createUser);
 

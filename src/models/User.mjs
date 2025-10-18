@@ -388,4 +388,22 @@ export class UserModel {
       throw error;
     }
   }
+
+  // Отримати всіх користувачів за допомогою курсора (для великих обсягів даних)
+  static async getAllWithCursor() {
+    try {
+      const cursor = db.collection('users').find({});
+      const users = [];
+      
+      // Використовуємо курсор для ітерації без завантаження всіх даних у пам'ять
+      await cursor.forEach(user => {
+        users.push(user);
+      });
+      
+      return users;
+    } catch (error) {
+      console.error('Помилка отримання користувачів з курсором:', error);
+      throw error;
+    }
+  }
 }

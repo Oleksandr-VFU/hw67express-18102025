@@ -11,6 +11,9 @@ router.get('/', ArticleController.getAllArticles);
 // GET /articles/find - розширене читання з фільтрами та проекціями
 router.get('/find', ArticleController.findArticles);
 
+// GET /articles/cursor - отримання статей з використанням курсора
+router.get('/cursor', ArticleController.getArticlesWithCursor);
+
 // POST /articles - створити нову статтю
 router.post('/', ArticleController.createArticle);
 
