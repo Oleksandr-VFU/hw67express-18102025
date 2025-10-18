@@ -124,6 +124,9 @@
 npm install
 
 # 2. Створіть .env файл з готовими налаштуваннями
+# Windows (PowerShell):
+copy .env.example .env
+# Linux/macOS:
 cp .env.example .env
 
 # 3. Запустіть сервер
@@ -150,6 +153,9 @@ npm install
 **🎯 ВАРІАНТ А: ГОТОВА БД (тільки читання - для перевірки)**
 ```bash
 # Просто скопіюйте файл - налаштування вже готові
+# Windows (PowerShell):
+copy .env.example .env
+# Linux/macOS:
 cp .env.example .env
 ```
 
@@ -205,10 +211,20 @@ npm start
 
 ## Environment Змінні
 
-Проект використовує наступні environment змінні:
+Проект використовує наступні environment змінні. Створіть файл `.env` з файлу `.env.example`:
+
+```bash
+# Windows (PowerShell):
+copy .env.example .env
+
+# Linux/macOS:
+cp .env.example .env
+
+# Або створіть .env файл вручну з наступним вмістом:
+```
 
 ```env
-# .env файл (створіть з .env.example)
+# .env файл (створіть з .env.example або вручну)
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 DB_NAME=blog
 SESSION_SECRET=your-secure-secret-key
@@ -224,6 +240,25 @@ NODE_ENV=development
 **Опціональні змінні:**
 - `PORT` - порт сервера (за замовчуванням: 3000)
 - `NODE_ENV` - режим роботи (development/production)
+
+### Поширені проблеми з .env
+
+**Якщо не бачите файл .env.example:**
+1. Переконайтеся, що показуються приховані файли в IDE/файловому менеджері
+2. Створіть .env файл вручну з вмістом з розділу вище
+3. У VS Code натисніть Ctrl+Shift+P → "Files: Show Hidden Files"
+
+**Якщо команда copy/cp не працює:**
+```bash
+# Windows (Command Prompt):
+copy .env.example .env
+
+# Windows (PowerShell):
+Copy-Item .env.example .env
+
+# Git Bash:
+cp .env.example .env
+```
 
 ## API Ендпоінти
 
