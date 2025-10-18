@@ -1,4 +1,4 @@
-import { db } from '../server.mjs';
+import { db } from '../config/database.mjs';
 
 /**
  * MongoDB Article Model - повноцінні CRUD операції з реальною базою даних

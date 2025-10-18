@@ -23,14 +23,17 @@ passport.use(new LocalStrategy({
       return done(null, false, { message: 'Неправильний email або пароль' });
     }
     
-    // Повертаємо користувача без пароля
+    // Повертаємо користувача без пароля з перевіркою наявності полів
     const userWithoutPassword = {
       id: user._id,
       username: user.username,
       email: user.email,
       role: user.role,
-      firstName: user.firstName,
-      lastName: user.lastName
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      isActive: user.isActive !== undefined ? user.isActive : true,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     };
     
     return done(null, userWithoutPassword);
@@ -57,8 +60,11 @@ passport.deserializeUser(async (id, done) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        isActive: user.isActive !== undefined ? user.isActive : true,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
       };
       done(null, userWithoutPassword);
     } else {
@@ -116,14 +122,17 @@ export const createUser = async (userData) => {
     const result = await UserModel.insertOne(newUserData);
     
     if (result.success) {
-      // Повертаємо користувача без пароля
+      // Повертаємо користувача без пароля з повними даними
       return {
         id: result.user._id,
         username: result.user.username,
         email: result.user.email,
         role: result.user.role,
-        firstName: result.user.firstName,
-        lastName: result.user.lastName
+        firstName: result.user.firstName || '',
+        lastName: result.user.lastName || '',
+        isActive: result.user.isActive !== undefined ? result.user.isActive : true,
+        createdAt: result.user.createdAt,
+        updatedAt: result.user.updatedAt
       };
     } else {
       throw new Error('Помилка створення користувача в базі даних');

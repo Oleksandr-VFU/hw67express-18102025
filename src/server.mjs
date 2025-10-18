@@ -1,5 +1,4 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ejs from 'ejs';
@@ -8,6 +7,7 @@ import session from 'express-session';
 import FileStore from 'session-file-store';
 import passport from 'passport';
 import dotenv from 'dotenv';
+import { connectToMongoDB, closeMongoDB } from './config/database.mjs';
 import usersRouter from './routes/users.mjs';
 import articlesRouter from './routes/articles.mjs';
 import settingsRouter from './routes/settings.mjs';
@@ -15,7 +15,6 @@ import authRouter from './routes/auth.mjs';
 import protectedRouter from './routes/protected.mjs';
 import { requestLogger, passportAuthMiddleware, requireAdmin, protectedRouteMiddleware } from './middleware/index.mjs';
 import { HomeController } from './controllers/HomeController.mjs';
-import { initializeDatabase } from './data/seedDatabase.mjs';
 import './config/passport.mjs'; // Конфігурація Passport стратегій 
 
 // Завантажуємо environment змінні
@@ -28,44 +27,6 @@ const __dirname = path.dirname(__filename);
 // Створюємо EXPRESS сервер
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// MongoDB Atlas підключення з environment змінних
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.DB_NAME || 'blog';
-
-if (!uri) {
-  console.error('❌ ПОМИЛКА: MONGODB_URI не встановлено в environment змінних!');
-  console.error('📝 Створіть .env файл з прикладу .env.example та вкажіть ваш MongoDB Atlas URI');
-  process.exit(1);
-}
-
-// Підключення до MongoDB Atlas
-let db;
-const client = new MongoClient(uri);
-
-async function connectToMongoDB() {
-  try {
-    await client.connect();
-    console.log('✅ Успішно підключено до MongoDB Atlas');
-    
-    db = client.db(dbName);
-    console.log(`📄 Використовується база даних: ${dbName}`);
-    
-    // Тестування підключення
-    await db.admin().ping();
-    console.log('🏓 MongoDB Atlas відповідає на ping');
-    
-    // Ініціалізація колекцій з реалістичними даними
-    await initializeDatabase(db);
-    
-  } catch (error) {
-    console.error('❌ Помилка підключення до MongoDB:', error);
-    process.exit(1);
-  }
-}
-
-// Експорт для використання в інших модулях
-export { db, client };
 
 // Налаштування шаблонізаторів
 app.set('view engine', 'pug'); // Дефолтний view engine для Pug
@@ -170,8 +131,7 @@ async function startServer() {
       console.log('\n⏹️ Отримано сигнал SIGINT. Закриваємо сервер...');
       
       try {
-        await client.close();
-        console.log('✅ MongoDB з\'єднання закрито');
+        await closeMongoDB();
         
         server.close(() => {
           console.log('✅ Express сервер закрито');

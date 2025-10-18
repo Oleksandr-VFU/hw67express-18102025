@@ -11,7 +11,7 @@ const hashPassword = async (password) => {
 
 // Користувачі з реалістичними даними
 export const getUsersData = async () => {
-  return [
+  const users = [
     {
       _id: 1,
       username: 'admin',
@@ -169,6 +169,12 @@ export const getUsersData = async () => {
       profileImage: '/images/test.jpg'
     }
   ];
+
+  // Автоматично додаємо updatedAt для всіх користувачів, якщо його немає
+  return users.map(user => ({
+    ...user,
+    updatedAt: user.updatedAt || user.createdAt || new Date()
+  }));
 };
 
 // Статті з реалістичним контентом
