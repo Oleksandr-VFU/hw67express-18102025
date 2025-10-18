@@ -1,5 +1,6 @@
 import { ArticleModel } from '../models/index.mjs';
 import { ArticleView } from '../views/index.mjs';
+import { getAuthorInfo } from '../utils/userUtils.mjs';
 
 /**
  * MongoDB Article Controller - спрощені CRUD операції
@@ -67,10 +68,13 @@ export class ArticleController {
   // POST /articles
   static async createArticle(req, res) {
     try {
+      // Безпечне отримання даних авторизованого користувача
+      const { authorId, authorName } = getAuthorInfo(req);
+
       const articleData = {
         ...req.body,
-        authorId: req.user ? req.user.id : 1,
-        authorName: req.user ? req.user.username : 'Unknown',
+        authorId,
+        authorName,
         category: 'Загальне',
         tags: []
       };
@@ -126,10 +130,13 @@ export class ArticleController {
   // POST /articles/insertOne - додати одну статтю
   static async insertOneArticle(req, res) {
     try {
+      // Безпечне отримання даних авторизованого користувача
+      const { authorId, authorName } = getAuthorInfo(req);
+
       const articleData = {
         ...req.body,
-        authorId: req.user ? req.user.id : 1,
-        authorName: req.user ? req.user.username : 'Unknown Author'
+        authorId,
+        authorName
       };
 
       const result = await ArticleModel.insertOne(articleData);
@@ -151,10 +158,13 @@ export class ArticleController {
   // POST /articles/insertMany - додати багато статей
   static async insertManyArticles(req, res) {
     try {
+      // Безпечне отримання даних авторизованого користувача
+      const { authorId, authorName } = getAuthorInfo(req);
+
       const articlesData = req.body.map(articleData => ({
         ...articleData,
-        authorId: req.user ? req.user.id : 1,
-        authorName: req.user ? req.user.username : 'Unknown Author'
+        authorId,
+        authorName
       }));
 
       const result = await ArticleModel.insertMany(articlesData);
@@ -215,10 +225,13 @@ export class ArticleController {
     try {
       const { filter, replacement } = req.body;
       
+      // Безпечне отримання даних авторизованого користувача
+      const { authorId, authorName } = getAuthorInfo(req);
+      
       const enrichedReplacement = {
         ...replacement,
-        authorId: req.user ? req.user.id : 1,
-        authorName: req.user ? req.user.username : 'Unknown Author'
+        authorId,
+        authorName
       };
 
       const result = await ArticleModel.replaceOneByFilter(filter, enrichedReplacement);
