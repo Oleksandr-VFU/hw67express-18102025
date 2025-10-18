@@ -1,40 +1,16 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcryptjs';
+import { UserModel } from '../models/index.mjs';
 
-// Простий список користувачів (замість бази даних)
-const users = [
-  {
-    id: 1,
-    username: 'admin',
-    email: 'admin@example.com',
-    password: '', // буде заповнено
-    role: 'admin'
-  },
-  {
-    id: 2,
-    username: 'user',
-    email: 'user@example.com',
-    password: '', // буде заповнено
-    role: 'user'
-  }
-];
-
-// Ініціалізація хешів паролів
-async function initUsers() {
-  users[0].password = await bcrypt.hash('admin123', 10);
-  users[1].password = await bcrypt.hash('user123', 10);
-}
-initUsers();
-
-// Конфігурація LocalStrategy для авторизації через email та пароль
+// Конфігурація LocalStrategy для авторизації через email та пароль з MongoDB
 passport.use(new LocalStrategy({
   usernameField: 'email', // Використовуємо email замість username
   passwordField: 'password'
 }, async (email, password, done) => {
   try {
-    // Знаходимо користувача за email
-    const user = users.find(u => u.email === email);
+    // Знаходимо користувача за email в MongoDB
+    const user = await UserModel.findByEmail(email);
     
     if (!user) {
       return done(null, false, { message: 'Неправильний email або пароль' });
@@ -49,15 +25,18 @@ passport.use(new LocalStrategy({
     
     // Повертаємо користувача без пароля
     const userWithoutPassword = {
-      id: user.id,
+      id: user._id,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName
     };
     
     return done(null, userWithoutPassword);
     
   } catch (error) {
+    console.error('Помилка авторизації через Passport:', error);
     return done(error);
   }
 }));
@@ -67,57 +46,91 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Десеріалізація користувача з сесії
-passport.deserializeUser((id, done) => {
-  const user = users.find(u => u.id === id);
-  
-  if (user) {
-    const userWithoutPassword = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role
-    };
-    done(null, userWithoutPassword);
-  } else {
-    done(new Error('Користувача не знайдено'), null);
+// Десеріалізація користувача з сесії з MongoDB
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await UserModel.getById(id);
+    
+    if (user) {
+      const userWithoutPassword = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName
+      };
+      done(null, userWithoutPassword);
+    } else {
+      done(new Error('Користувача не знайдено в базі даних'), null);
+    }
+  } catch (error) {
+    console.error('Помилка десеріалізації користувача:', error);
+    done(error, null);
   }
 });
 
-// Функції для роботи з користувачами
-export const findUserByEmail = (email) => users.find(u => u.email === email);
-export const findUserById = (id) => users.find(u => u.id === id);
-
-// Функція для створення нового користувача
-export const createUser = async (userData) => {
-  const { username, email, password } = userData;
-  
-  // Перевіряємо чи користувач з таким email існує
-  if (findUserByEmail(email)) {
-    throw new Error('Користувач з таким email вже існує');
+// Функції для роботи з користувачами через MongoDB
+export const findUserByEmail = async (email) => {
+  try {
+    return await UserModel.findByEmail(email);
+  } catch (error) {
+    console.error('Помилка пошуку користувача за email:', error);
+    return null;
   }
-  
-  // Хешуємо пароль
-  const hashedPassword = await bcrypt.hash(password, 10);
-  
-  // Створюємо нового користувача
-  const newUser = {
-    id: users.length + 1,
-    username,
-    email,
-    password: hashedPassword,
-    role: 'user'
-  };
-  
-  users.push(newUser);
-  
-  // Повертаємо користувача без пароля
-  return {
-    id: newUser.id,
-    username: newUser.username,
-    email: newUser.email,
-    role: newUser.role
-  };
 };
 
-export { users };
+export const findUserById = async (id) => {
+  try {
+    return await UserModel.getById(id);
+  } catch (error) {
+    console.error('Помилка пошуку користувача за ID:', error);
+    return null;
+  }
+};
+
+// Функція для створення нового користувача в MongoDB
+export const createUser = async (userData) => {
+  try {
+    const { username, email, password, firstName, lastName } = userData;
+    
+    // Перевіряємо чи користувач з таким email існує
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) {
+      throw new Error('Користувач з таким email вже існує');
+    }
+    
+    // Хешуємо пароль
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Створюємо нового користувача через модель
+    const newUserData = {
+      username,
+      email,
+      password: hashedPassword,
+      role: 'user',
+      firstName: firstName || '',
+      lastName: lastName || ''
+    };
+    
+    const result = await UserModel.insertOne(newUserData);
+    
+    if (result.success) {
+      // Повертаємо користувача без пароля
+      return {
+        id: result.user._id,
+        username: result.user.username,
+        email: result.user.email,
+        role: result.user.role,
+        firstName: result.user.firstName,
+        lastName: result.user.lastName
+      };
+    } else {
+      throw new Error('Помилка створення користувача в базі даних');
+    }
+    
+  } catch (error) {
+    console.error('Помилка створення користувача:', error);
+    throw error;
+  }
+};
