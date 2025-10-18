@@ -1,0 +1,266 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title || "Express API з Pug"
+    link(rel="icon", href="/favicon.ico", type="image/x-icon")
+    style.
+      /* Базові стилі */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      
+      /* Світла тема (за замовчуванням) */
+      body, body.theme-light {
+        background-color: #f8f9fa;
+        color: #333;
+      }
+      
+      /* Темна тема */
+      body.theme-dark {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+      body.theme-dark .container {
+        background: #2d2d2d;
+        color: #e0e0e0;
+      }
+      body.theme-dark .nav a {
+        background: #3a3a3a;
+        color: #4fc3f7;
+      }
+      body.theme-dark .nav a:hover {
+        background: #4a4a4a;
+      }
+      
+      /* Синя тема */
+      body.theme-blue {
+        background-color: #e3f2fd;
+        color: #0d47a1;
+      }
+      body.theme-blue .container {
+        background: #bbdefb;
+        color: #0d47a1;
+      }
+      body.theme-blue .nav a {
+        background: #2196f3;
+        color: white;
+      }
+      body.theme-blue .nav a:hover {
+        background: #1976d2;
+      }
+      
+      /* Зелена тема */
+      body.theme-green {
+        background-color: #e8f5e8;
+        color: #1b5e20;
+      }
+      body.theme-green .container {
+        background: #c8e6c9;
+        color: #1b5e20;
+      }
+      body.theme-green .nav a {
+        background: #4caf50;
+        color: white;
+      }
+      body.theme-green .nav a:hover {
+        background: #388e3c;
+      }
+      
+      /* Основні стилі (універсальні) */
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .header {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+      }
+      .header h1 {
+        color: #495057;
+        margin: 0;
+      }
+      .nav {
+        margin: 20px 0;
+      }
+      .nav a {
+        display: inline-block;
+        margin-right: 20px;
+        padding: 8px 15px;
+        text-decoration: none;
+        color: #007bff;
+        background: #e7f3ff;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+      .nav a:hover {
+        background: #cce7ff;
+      }
+      .user-card {
+        border: 1px solid #dee2e6;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 8px;
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+      }
+      .user-list {
+        list-style: none;
+        padding: 0;
+      }
+      .user-list li {
+        margin: 12px 0;
+      }
+      .user-list a {
+        display: block;
+        padding: 15px;
+        background: #e9ecef;
+        text-decoration: none;
+        color: #495057;
+        border-radius: 6px;
+        transition: background 0.3s;
+      }
+      .user-list a:hover {
+        background: #dee2e6;
+      }
+      .badge {
+        background: #28a745;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+      }
+      .error {
+        color: #dc3545;
+      }
+      .actions {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f1f3f4;
+        border-radius: 5px;
+      }
+      .api-endpoints {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+      .api-endpoints code {
+        background: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: bold;
+      }
+      
+      /* Стилі для форми налаштувань */
+      .theme-settings {
+        margin: 20px 0;
+      }
+      .theme-form {
+        margin: 20px 0;
+      }
+      .theme-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .theme-option {
+        position: relative;
+      }
+      .theme-option input[type="radio"] {
+        display: none;
+      }
+      .theme-label {
+        display: block;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 120px;
+        text-align: center;
+      }
+      .theme-option input[type="radio"]:checked + .theme-label {
+        border-color: #007bff;
+        background: #e7f3ff;
+      }
+      .theme-preview {
+        width: 100%;
+        height: 30px;
+        margin-top: 10px;
+        border-radius: 4px;
+      }
+      .preview-light { background: linear-gradient(45deg, #f8f9fa, #ffffff); }
+      .preview-dark { background: linear-gradient(45deg, #1a1a1a, #2d2d2d); }
+      .preview-blue { background: linear-gradient(45deg, #e3f2fd, #bbdefb); }
+      .preview-green { background: linear-gradient(45deg, #e8f5e8, #c8e6c9); }
+      
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        transition: background-color 0.3s;
+      }
+      .btn-primary {
+        background: #007bff;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #0056b3;
+      }
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+      .btn-secondary:hover {
+        background: #545b62;
+      }
+      .card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+      .current-theme {
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+  body
+    .container
+      .header
+        h1= title || "Express API"
+      .nav
+        a(href="/") Головна
+        a(href="/users") Користувачі
+        a(href="/articles") Статті
+        a(href="/protected") 🔒 Захищена
+        a(href="/settings") Налаштування
+      block content
+  
+  script.
+    // Читаємо тему з cookie та застосовуємо
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return 'light';
+    }
+    
+    // Застосовуємо тему при завантаженні сторінки
+    document.addEventListener('DOMContentLoaded', function() {
+      const theme = getCookie('theme');
+      document.body.className = 'theme-' + theme;
+    });

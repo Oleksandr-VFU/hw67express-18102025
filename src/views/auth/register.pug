@@ -1,0 +1,66 @@
+extends ../users/layout
+
+block content
+  h2 Реєстрація
+
+  if error
+    .alert.alert-error
+      p= error
+
+  form(action="/auth/register", method="POST", class="auth-form")
+    .form-group
+      label(for="username") Ім'я користувача:
+      input(
+        type="text", 
+        id="username", 
+        name="username", 
+        value=(formData && formData.username) || '',
+        required,
+        minlength="3",
+        maxlength="20"
+      )
+      small Від 3 до 20 символів
+
+    .form-group
+      label(for="email") Email:
+      input(
+        type="email", 
+        id="email", 
+        name="email", 
+        value=(formData && formData.email) || '',
+        required
+      )
+
+    .form-group
+      label(for="password") Пароль:
+      input(
+        type="password", 
+        id="password", 
+        name="password", 
+        required,
+        minlength="6"
+      )
+      small Мінімум 6 символів
+
+    .form-group
+      label(for="confirmPassword") Підтвердження паролю:
+      input(
+        type="password", 
+        id="confirmPassword", 
+        name="confirmPassword", 
+        required
+      )
+
+    .form-actions
+      button(type="submit", class="btn btn-primary") Зареєструватися
+      a(href="/auth/login", class="btn btn-secondary") Вже є акаунт? Увійти
+
+  .demo-users
+    h3 Демо користувачі для тестування:
+    ul
+      li
+        strong admin
+        |  / admin123 - адміністратор (доступ до статей)
+      li
+        strong user
+        |  / user123 - звичайний користувач

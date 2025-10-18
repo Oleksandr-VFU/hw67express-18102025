@@ -1,0 +1,109 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title || "Авторизація"
+    link(rel="icon" href="/favicon.ico" type="image/x-icon")
+    style.
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 40px; 
+        background-color: #f5f5f5; 
+      }
+      .auth-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .auth-form {
+        margin: 20px 0;
+        padding: 25px;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        background: #f8f9fa;
+      }
+      .form-group {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+      }
+      .form-group label {
+        display: inline-block;
+        width: 80px;
+        font-weight: bold;
+        color: #495057;
+      }
+      .form-group input {
+        padding: 8px 12px;
+        margin: 0 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        flex: 1;
+        max-width: 200px;
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: #007cba;
+        box-shadow: 0 0 0 2px rgba(0,124,186,0.25);
+      }
+      .help-text {
+        color: #6c757d;
+        font-size: 12px;
+        margin-left: 10px;
+      }
+      .submit-btn {
+        padding: 10px 20px;
+        background: #007cba;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+        margin-top: 10px;
+      }
+      .submit-btn:hover {
+        background: #0056b3;
+      }
+      .register-btn {
+        background: #28a745;
+      }
+      .register-btn:hover {
+        background: #218838;
+      }
+
+  body
+    .auth-container
+      h1 Авторизація
+      p.text-muted Увійдіть до системи або створіть новий акаунт
+      
+      .auth-form
+        h2 Вхід до системи
+        form(action="/auth/login" method="POST")
+          .form-group
+            label Email:
+            input(type="email" name="email" value="admin@example.com" required)
+            .help-text (admin@example.com або user@example.com)
+          .form-group
+            label Пароль:
+            input(type="password" name="password" value="admin123" required)
+            .help-text (admin123 або user123)
+          button.submit-btn(type="submit") Увійти
+
+      .auth-form
+        h2 Реєстрація
+        form(action="/auth/register" method="POST")
+          .form-group
+            label Логін:
+            input(type="text" name="username" required placeholder="Введіть логін")
+          .form-group
+            label Email:
+            input(type="email" name="email" required placeholder="Введіть email")
+          .form-group
+            label Пароль:
+            input(type="password" name="password" required placeholder="Введіть пароль")
+          button.submit-btn.register-btn(type="submit") Зареєструватися

@@ -1,0 +1,51 @@
+extends ../users/layout
+
+block content
+  h2 Профіль користувача
+
+  if user
+    .user-profile
+      .user-info
+        h3 Інформація про користувача
+        .user-details
+          .user-field
+            strong ID: 
+            span= user.id
+          .user-field
+            strong Ім'я користувача: 
+            span= user.username
+          .user-field
+            strong Email: 
+            span= user.email
+          .user-field
+            strong Роль: 
+            span.role-badge(class=`role-${user.role}`)= user.role === 'admin' ? 'Адміністратор' : 'Користувач'
+
+      .user-permissions
+        h3 Дозволи
+        ul
+          li ✅ Перегляд користувачів
+          li ✅ Зміна налаштувань теми
+          if user.role === 'admin'
+            li ✅ Управління статтями (адмін)
+          else
+            li ❌ Управління статтями (тільки для адміністраторів)
+
+      .user-actions
+        h3 Дії
+        .actions-grid
+          a(href="/settings", class="btn btn-primary") Налаштування
+          a(href="/users", class="btn btn-secondary") Користувачі
+          if user.role === 'admin'
+            a(href="/articles", class="btn btn-success") Статті (Адмін)
+          
+          form(action="/auth/logout", method="POST", style="display: inline;")
+            button(type="submit", class="btn btn-danger") Вийти
+
+  else
+    .not-authenticated
+      h3 Ви не авторизовані
+      p Будь ласка, увійдіть в систему для перегляду профілю
+      .auth-links
+        a(href="/auth/login", class="btn btn-primary") Увійти
+        a(href="/auth/register", class="btn btn-secondary") Зареєструватися

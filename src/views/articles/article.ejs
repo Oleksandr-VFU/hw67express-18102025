@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || "Express API з EJS" %></title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        /* Базові стилі */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Світла тема (за замовчуванням) */
+        body, body.theme-light {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        /* Темна тема */
+        body.theme-dark {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        body.theme-dark .container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+        body.theme-dark .nav a {
+            background: #3a3a3a;
+            color: #4fc3f7;
+        }
+        body.theme-dark .nav a:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Синя тема */
+        body.theme-blue {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+        body.theme-blue .container {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+        body.theme-blue .nav a {
+            background: #2196f3;
+            color: white;
+        }
+        body.theme-blue .nav a:hover {
+            background: #1976d2;
+        }
+        
+        /* Зелена тема */
+        body.theme-green {
+            background-color: #e8f5e8;
+            color: #1b5e20;
+        }
+        body.theme-green .container {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+        body.theme-green .nav a {
+            background: #4caf50;
+            color: white;
+        }
+        body.theme-green .nav a:hover {
+            background: #388e3c;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #495057;
+            margin: 0;
+        }
+        .nav {
+            margin: 20px 0;
+        }
+        .nav a {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #007bff;
+            background: #e7f3ff;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav a:hover {
+            background: #cce7ff;
+        }
+        .article-card {
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .actions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 5px;
+        }
+        .api-endpoints {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .api-endpoints code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><%= title || "Express API" %></h1>
+        </div>
+        <div class="nav">
+            <a href="/">Головна</a>
+            <a href="/users">Користувачі</a>
+            <a href="/articles">Статті</a>
+            <a href="/settings">Налаштування</a>
+        </div>
+
+        <h2>Деталі статті</h2>
+        
+        <% if (articleExists && article) { %>
+            <div class="article-card">
+                <h3><%= article.title %></h3>
+                <p>
+                    <strong>Автор:</strong> 
+                    <span><%= article.authorName %></span>
+                </p>
+                <p>
+                    <strong>Категорія:</strong> 
+                    <span class="badge"><%= article.category %></span>
+                </p>
+                <p>
+                    <strong>Переглядів:</strong> 
+                    <span><%= article.views %></span>
+                </p>
+                <p>
+                    <strong>Лайків:</strong> 
+                    <span><%= article.likes %></span>
+                </p>
+                <p>
+                    <strong>Дата створення:</strong> 
+                    <span><%= new Date(article.createdAt).toLocaleString('uk-UA') %></span>
+                </p>
+                <% if (article.updatedAt && article.updatedAt !== article.createdAt) { %>
+                <p>
+                    <strong>Останнє оновлення:</strong> 
+                    <span><%= new Date(article.updatedAt).toLocaleString('uk-UA') %></span>
+                </p>
+                <% } %>
+                
+                <% if (article.tags && article.tags.length > 0) { %>
+                <p>
+                    <strong>Теги:</strong> 
+                    <% article.tags.forEach(function(tag, index) { %>
+                        <span class="badge" style="background: #6c757d; margin-right: 5px;"><%= tag %></span>
+                    <% }); %>
+                </p>
+                <% } %>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+                    <h4>Зміст статті:</h4>
+                    <div style="white-space: pre-line; line-height: 1.6; color: #495057;">
+                        <%= article.content %>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <p><strong>Доступні дії (тільки для admin):</strong></p>
+                    <ul>
+                        <li>Перегляд деталей статті</li>
+                        <li>Оновлення змісту (PUT /articles/<%= article._id %>)</li>
+                        <li>Видалення статті (DELETE /articles/<%= article._id %>)</li>
+                    </ul>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="article-card">  
+                <h3>Стаття не знайдена</h3>
+                <p>
+                    <strong>Помилка:</strong> 
+                    <span class="error">Стаття з ID "<%= articleId %>" не існує в системі</span>
+                </p>
+                <p>Спробуйте інший ID або перейдіть до списку статей</p>
+            </div>
+        <% } %>
+        
+        <div class="nav">
+            <a href="/articles">← Назад до списку статей</a>
+        </div>
+        
+        <div class="api-endpoints">
+            <p><strong>API endpoints для цієї статті:</strong></p>
+            <ul>
+                <li>
+                    <code>GET /articles/<%= articleId %></code> - отримати статтю (JSON/HTML)
+                </li>
+                <li>
+                    <code>PUT /articles/<%= articleId %></code> - оновити статтю (JSON)
+                </li>
+                <li>
+                    <code>DELETE /articles/<%= articleId %></code> - видалити статтю (JSON)
+                </li>
+            </ul>
+            
+            <section class="api-info">
+                <h3>API Інформація</h3>
+                <p><strong>Примітка:</strong> Веб-інтерфейс автоматично авторизований</p>
+            </section>
+        </div>
+
+    </div>
+
+    <script>
+        // Читаємо тему з cookie та застосовуємо
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return 'light';
+        }
+        
+        // Застосовуємо тему при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = getCookie('theme');
+            document.body.className = 'theme-' + theme;
+        });
+    </script>
+</body>
+</html>

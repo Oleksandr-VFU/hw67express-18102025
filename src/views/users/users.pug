@@ -1,0 +1,40 @@
+extends layout
+
+block content
+  h2 Список користувачів
+  
+  p Тут відображаються всі користувачі в системі
+  
+  if users && users.length > 0
+    ul.user-list
+      each user in users
+        li
+          a(href=`/users/${user._id}`) #{user.firstName} #{user.lastName} (#{user.username}) - #{user.role}
+          if user.email
+            | - #{user.email}
+  else
+    p Користувачів не знайдено
+  
+  .api-endpoints
+    p
+      strong API endpoints:
+    ul
+      li
+        code GET /users
+        | - отримати список користувачів (JSON)
+      li
+        code POST /users
+        | - створити нового користувача (JSON)
+      li
+        code GET /users/:id
+        | - отримати користувача за ID (JSON/HTML)
+      li
+        code PUT /users/:id
+        | - оновити користувача (JSON)
+      li
+        code DELETE /users/:id
+        | - видалити користувача (JSON)
+    
+    p
+      strong Примітка: 
+      | Веб-інтерфейс автоматично авторизований

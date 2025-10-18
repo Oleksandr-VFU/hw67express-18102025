@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || "Express API з EJS" %></title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        /* Базові стилі */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Світла тема (за замовчуванням) */
+        body, body.theme-light {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        /* Темна тема */
+        body.theme-dark {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        body.theme-dark .container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+        body.theme-dark .nav a {
+            background: #3a3a3a;
+            color: #4fc3f7;
+        }
+        body.theme-dark .nav a:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Синя тема */
+        body.theme-blue {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+        body.theme-blue .container {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+        body.theme-blue .nav a {
+            background: #2196f3;
+            color: white;
+        }
+        body.theme-blue .nav a:hover {
+            background: #1976d2;
+        }
+        
+        /* Зелена тема */
+        body.theme-green {
+            background-color: #e8f5e8;
+            color: #1b5e20;
+        }
+        body.theme-green .container {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+        body.theme-green .nav a {
+            background: #4caf50;
+            color: white;
+        }
+        body.theme-green .nav a:hover {
+            background: #388e3c;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #495057;
+            margin: 0;
+        }
+        .nav {
+            margin: 20px 0;
+        }
+        .nav a {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #007bff;
+            background: #e7f3ff;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav a:hover {
+            background: #cce7ff;
+        }
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
+        .article-list li {
+            margin: 12px 0;
+        }
+        .article-list a {
+            display: block;
+            padding: 15px;
+            background: #e9ecef;
+            text-decoration: none;
+            color: #495057;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .article-list a:hover {
+            background: #dee2e6;
+        }
+        .api-endpoints {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .api-endpoints code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><%= title || "Express API" %></h1>
+        </div>
+        <div class="nav">
+            <a href="/">Головна</a>
+            <a href="/users">Користувачі</a>
+            <a href="/articles">Статті</a>
+            <a href="/protected">🔒 Захищена</a>
+            <a href="/settings">Налаштування</a>
+        </div>
+        
+        <h2>Список статей</h2>
+        
+        <p>Тут відображаються всі статті в системі (доступно тільки для admin користувачів)</p>
+        
+        <% if (articles && articles.length > 0) { %>
+            <ul class="article-list">
+                <% articles.forEach(function(article) { %>
+                    <li>
+                        <a href="/articles/<%= article._id %>">
+                            <strong><%= article.title %></strong><br>
+                            <small>Автор: <%= article.authorName %> | Категорія: <%= article.category %> | Переглядів: <%= article.views %></small>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>Статей не знайдено</p>
+        <% } %>
+        
+        <div class="api-endpoints">
+            <p><strong>API endpoints:</strong></p>
+            <ul>
+                <li>
+                    <code>GET /articles</code> - отримати список статей (JSON)
+                </li>
+                <li>
+                    <code>POST /articles</code> - створити нову статтю (JSON)
+                </li>
+                <li>
+                    <code>GET /articles/:id</code> - отримати статтю за ID (JSON/HTML)
+                </li>
+                <li>
+                    <code>PUT /articles/:id</code> - оновити статтю (JSON)
+                </li>
+                <li>
+                    <code>DELETE /articles/:id</code> - видалити статтю (JSON)
+                </li>
+            </ul>
+            
+            <p><strong>Примітка:</strong> Веб-інтерфейс автоматично авторизований</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Читаємо тему з cookie та застосовуємо
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return 'light';
+        }
+        
+        // Застосовуємо тему при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = getCookie('theme');
+            document.body.className = 'theme-' + theme;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+extends ../users/layout
+
+block content
+  h2 Налаштування теми оформлення
+  
+  .theme-settings
+    p Поточна тема: 
+      span.current-theme #{currentTheme}
+    
+    form(action="/settings/theme", method="POST", class="theme-form")
+      .theme-options
+        each theme in themes
+          .theme-option
+            input(
+              type="radio", 
+              name="theme", 
+              value=theme.value, 
+              id=`theme-${theme.value}`,
+              checked=(currentTheme === theme.value)
+            )
+            label(for=`theme-${theme.value}`, class=`theme-label theme-${theme.value}`)
+              span.theme-name= theme.name
+              .theme-preview(class=`preview-${theme.value}`)
+      
+      .form-actions
+        button(type="submit", class="btn btn-primary") Зберегти тему
+        button(type="button", class="btn btn-secondary", onclick="resetTheme()") Скинути до світлої
+  
+  .demo-content
+    h3 Попередній перегляд
+    p Це приклад тексту з обраною темою
+    .card
+      h4 Заголовок картки
+      p Це демонстраційний контент для перегляду теми
+  
+  .api-info
+    h3 API для роботи з темами
+    ul
+      li
+        code GET /settings/theme
+        |  - отримати поточну тему
+      li
+        code POST /settings/theme
+        |  - встановити нову тему
+      li
+        code GET /settings
+        |  - сторінка налаштувань
+
+  script.
+    function resetTheme() {
+      fetch('/settings/theme', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ theme: 'light' })
+      }).then(() => {
+        location.reload();
+      });
+    }
+    
+    // Динамічна зміна теми без перезавантаження
+    document.querySelectorAll('input[name="theme"]').forEach(input => {
+      input.addEventListener('change', function() {
+        document.body.className = 'theme-' + this.value;
+      });
+    });
+    
+    // Застосовуємо поточну тему до body
+    document.body.className = 'theme-#{currentTheme}';

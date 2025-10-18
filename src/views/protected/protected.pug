@@ -1,0 +1,147 @@
+doctype html
+html(lang="uk")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title || "Захищена сторінка"
+    link(rel="icon" href="/favicon.ico" type="image/x-icon")
+    style.
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 40px; 
+        background-color: #f5f5f5; 
+      }
+      .protected-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .success-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .user-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin: 20px 0;
+        border-left: 4px solid #007bff;
+      }
+      .session-info {
+        background: #e9ecef;
+        padding: 20px;
+        border-radius: 6px;
+        margin: 20px 0;
+        border-left: 4px solid #6c757d;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 8px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-label {
+        font-weight: bold;
+        color: #495057;
+      }
+      .info-value {
+        color: #6c757d;
+      }
+      .role-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .role-admin {
+        background: #dc3545;
+        color: white;
+      }
+      .role-user {
+        background: #007bff;
+        color: white;
+      }
+      .nav-links {
+        margin: 30px 0;
+        text-align: center;
+      }
+      .nav-links a {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+      .nav-links a:hover {
+        background: #0056b3;
+      }
+      .security-notice {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        color: #856404;
+      }
+
+  body
+    .protected-container
+      .success-header
+        h1 🔒 Захищена сторінка
+        p Ви успішно отримали доступ до захищеного ресурсу!
+      
+      .user-info
+        h3 📋 Інформація про користувача
+        .info-row
+          .info-label ID користувача:
+          .info-value= user.id
+        .info-row
+          .info-label Ім'я користувача:
+          .info-value= user.username
+        .info-row
+          .info-label Email:
+          .info-value= user.email
+        .info-row
+          .info-label Роль:
+          .info-value
+            span.role-badge(class=`role-${user.role}`)= user.role === 'admin' ? 'Адміністратор' : 'Користувач'
+      
+      .session-info
+        h3 🛡️ Інформація про сесію
+        .info-row
+          .info-label ID сесії:
+          .info-value= sessionInfo.sessionId
+        .info-row
+          .info-label Статус авторизації:
+          .info-value= sessionInfo.loginTime
+        .info-row
+          .info-label Час життя сесії:
+          .info-value= sessionInfo.sessionAge
+      
+      .security-notice
+        strong ⚠️ Примітка безпеки: 
+        | Цей маршрут захищений за допомогою Passport.js та Express Sessions. 
+        | Доступ надається лише авторизованим користувачам з валідною сесією.
+      
+      .nav-links
+        a(href="/") Головна сторінка
+        a(href="/users") Користувачі
+        if user.role === 'admin'
+          a(href="/articles") Статті (Адмін)
+        a(href="/auth/profile") Мій профіль
+        a(href="/settings") Налаштування

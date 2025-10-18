@@ -1,0 +1,63 @@
+extends layout
+
+block content
+  h2 Деталі користувача
+  
+  if userExists && user
+    .user-card
+      h3 #{user.firstName} #{user.lastName}
+      p 
+        strong Username: 
+        span.badge #{user.username}
+      p 
+        strong Email: 
+        span #{user.email || 'Не вказано'}
+      p 
+        strong Роль: 
+        span.role #{user.role}
+      p 
+        strong Статус: 
+        span(class=user.isActive ? 'active' : 'inactive') #{user.isActive ? 'Активний' : 'Неактивний'}
+      p 
+        strong Дата реєстрації: 
+        span= user.createdAt ? new Date(user.createdAt).toLocaleString('uk-UA') : 'Не вказано'
+      if user.updatedAt
+        p 
+          strong Останнє оновлення: 
+          span= new Date(user.updatedAt).toLocaleString('uk-UA')
+      
+      .actions
+        p
+          strong Доступні дії:
+        ul
+          li Перегляд деталей користувача
+          li Оновлення інформації (PUT /users/#{user._id})
+          li Видалення користувача (DELETE /users/#{user._id})
+  else
+    .user-card
+      h3 Користувач не знайдений
+      p 
+        strong Помилка: 
+        span.error Користувач з ID "#{userId}" не існує в системі
+      p Спробуйте інший ID або перейдіть до списку користувачів
+  
+  .nav
+    a(href="/users") ← Назад до списку користувачів
+  
+  .api-endpoints
+    p
+      strong API endpoints для цього користувача:
+    ul
+      li
+        code GET /users/#{userId}
+        | - отримати користувача (JSON/HTML)
+      li
+        code PUT /users/#{userId}
+        | - оновити користувача (JSON)
+      li
+        code DELETE /users/#{userId}
+        | - видалити користувача (JSON)
+    
+    p
+      strong Примітка: 
+      | Веб-інтерфейс автоматично авторизований
