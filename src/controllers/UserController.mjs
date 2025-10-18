@@ -288,4 +288,20 @@ export class UserController {
       res.status(500).json({ error: 'Помилка сервера' });
     }
   }
+
+  // GET /users/statistics - отримання статистики користувачів
+  static async getUsersStatistics(req, res) {
+    try {
+      const statistics = await UserModel.getStatistics();
+      
+      res.json({
+        message: 'Статистика користувачів',
+        method: 'aggregation',
+        statistics: statistics
+      });
+    } catch (error) {
+      console.error('Помилка отримання статистики користувачів:', error);
+      res.status(500).json({ error: 'Помилка сервера' });
+    }
+  }
 }

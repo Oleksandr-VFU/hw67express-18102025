@@ -406,4 +406,41 @@ export class UserModel {
       throw error;
     }
   }
+
+  // Агрегаційний запит для отримання статистики користувачів
+  static async getStatistics() {
+    try {
+      const statistics = await db.collection('users').aggregate([
+        {
+          $group: {
+            _id: null,
+            totalUsers: { $sum: 1 },
+            activeUsers: { $sum: { $cond: [{ $eq: ['$isActive', true] }, 1, 0] } },
+            usersByRole: { $push: '$role' }
+          }
+        },
+        {
+          $addFields: {
+            roleStats: {
+              $arrayToObject: {
+                $map: {
+                  input: { $setUnion: ['$usersByRole'] },
+                  as: 'role',
+                  in: {
+                    k: '$$role',
+                    v: { $size: { $filter: { input: '$usersByRole', cond: { $eq: ['$$this', '$$role'] } } } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]).toArray();
+
+      return statistics[0] || { totalUsers: 0, activeUsers: 0, roleStats: {} };
+    } catch (error) {
+      console.error('Помилка отримання статистики користувачів:', error);
+      throw error;
+    }
+  }
 }

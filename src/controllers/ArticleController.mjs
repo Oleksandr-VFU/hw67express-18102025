@@ -325,4 +325,20 @@ export class ArticleController {
       res.status(500).json({ error: 'Помилка сервера' });
     }
   }
+
+  // GET /articles/statistics - отримання статистики статей
+  static async getArticlesStatistics(req, res) {
+    try {
+      const statistics = await ArticleModel.getStatistics();
+      
+      res.json({
+        message: 'Статистика статей',
+        method: 'aggregation',
+        statistics: statistics
+      });
+    } catch (error) {
+      console.error('Помилка отримання статистики статей:', error);
+      res.status(500).json({ error: 'Помилка сервера' });
+    }
+  }
 }

@@ -14,6 +14,9 @@ router.get('/find', ArticleController.findArticles);
 // GET /articles/cursor - отримання статей з використанням курсора
 router.get('/cursor', ArticleController.getArticlesWithCursor);
 
+// GET /articles/statistics - отримання статистики статей
+router.get('/statistics', ArticleController.getArticlesStatistics);
+
 // POST /articles - створити нову статтю
 router.post('/', ArticleController.createArticle);
 

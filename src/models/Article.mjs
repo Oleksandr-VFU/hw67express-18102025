@@ -479,4 +479,53 @@ export class ArticleModel {
       throw error;
     }
   }
+
+  // Агрегаційний запит для отримання статистики статей
+  static async getStatistics() {
+    try {
+      const statistics = await db.collection('articles').aggregate([
+        {
+          $group: {
+            _id: null,
+            totalArticles: { $sum: 1 },
+            publishedArticles: { $sum: { $cond: [{ $eq: ['$isPublished', true] }, 1, 0] } },
+            totalViews: { $sum: '$views' },
+            totalLikes: { $sum: '$likes' },
+            avgViews: { $avg: '$views' },
+            avgLikes: { $avg: '$likes' },
+            categoriesData: { $push: '$category' }
+          }
+        },
+        {
+          $addFields: {
+            categoriesStats: {
+              $arrayToObject: {
+                $map: {
+                  input: { $setUnion: ['$categoriesData'] },
+                  as: 'category',
+                  in: {
+                    k: '$$category',
+                    v: { $size: { $filter: { input: '$categoriesData', cond: { $eq: ['$$this', '$$category'] } } } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]).toArray();
+
+      return statistics[0] || { 
+        totalArticles: 0, 
+        publishedArticles: 0, 
+        totalViews: 0, 
+        totalLikes: 0,
+        avgViews: 0,
+        avgLikes: 0,
+        categoriesStats: {} 
+      };
+    } catch (error) {
+      console.error('Помилка отримання статистики статей:', error);
+      throw error;
+    }
+  }
 }

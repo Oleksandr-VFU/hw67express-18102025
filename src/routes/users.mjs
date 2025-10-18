@@ -14,6 +14,9 @@ router.get('/find', UserController.findUsers);
 // GET /users/cursor - отримання користувачів з використанням курсора
 router.get('/cursor', UserController.getUsersWithCursor);
 
+// GET /users/statistics - отримання статистики користувачів
+router.get('/statistics', UserController.getUsersStatistics);
+
 // POST /users - створити нового користувача
 router.post('/', UserController.createUser);
 
