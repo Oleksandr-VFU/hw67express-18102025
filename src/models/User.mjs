@@ -110,22 +110,6 @@ export class UserModel {
     }
   }
 
-  // Отримати статистику користувачів
-  static async getStats() {
-    try {
-      const total = await db.collection('users').countDocuments();
-      const active = await db.collection('users').countDocuments({ isActive: true });
-      const byRole = await db.collection('users').aggregate([
-        { $group: { _id: '$role', count: { $sum: 1 } } }
-      ]).toArray();
-      
-      return { total, active, byRole };
-    } catch (error) {
-      console.error('Помилка отримання статистики користувачів:', error);
-      throw error;
-    }
-  }
-
   // Додати одного користувача до MongoDB (insertOne)
   static async insertOne(userData) {
     try {

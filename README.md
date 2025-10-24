@@ -44,6 +44,57 @@ static async getAllWithCursor() {
 }
 ```
 
+### **Методи пошуку та фільтрації** 🔍
+
+**UserModel.findByEmail()** - пошук користувача за email (для авторизації):
+```javascript
+static async findByEmail(email) {
+  const user = await db.collection('users').findOne({ email: email });
+  return user;
+}
+```
+
+**UserModel.getByRole()** - фільтрація користувачів за роллю:
+```javascript
+static async getByRole(role) {
+  const users = await db.collection('users').find({ role: role }).toArray();
+  return users;
+}
+```
+
+**ArticleModel.getByAuthor()** - статті конкретного автора:
+```javascript
+static async getByAuthor(authorId) {
+  const articles = await db.collection('articles')
+    .find({ authorId: parseInt(authorId) })
+    .sort({ createdAt: -1 })
+    .toArray();
+  return articles;
+}
+```
+
+**ArticleModel.getByCategory()** - статті за категорією:
+```javascript
+static async getByCategory(category) {
+  const articles = await db.collection('articles')
+    .find({ category: category })
+    .sort({ createdAt: -1 })
+    .toArray();
+  return articles;
+}
+```
+
+**ArticleModel.getByTags()** - пошук статей за тегами:
+```javascript
+static async getByTags(tags) {
+  const articles = await db.collection('articles')
+    .find({ tags: { $in: Array.isArray(tags) ? tags : [tags] } })
+    .sort({ createdAt: -1 })
+    .toArray();
+  return articles;
+}
+```
+
 ### **Нові маршрути з курсорами** 🚀
 
 **GET /users/cursor** - отримання користувачів через курсор
@@ -113,15 +164,16 @@ GET http://localhost:3000/articles/statistics
 ```
 ```
 
-## **Успадкована функціональність** 🏗️
+### **Успадкована функціональність** 🏗️
 
 **З попередніх проектів:**
 - **Express.js 5.1.0 сервер** з MongoDB Atlas інтеграцією
-- **Passport.js авторизація** з LocalStrategy
+- **Passport.js авторизація** з LocalStrategy (використовує `UserModel.findByEmail()`)
 - **Повний набір CRUD операцій** (insertOne/Many, updateOne/Many, replaceOne, deleteOne/Many, find)
 - **Безпечні сесії** з file storage та 13 користувачів + 11 статей  
 - **Pug + EJS шаблонізатори** з динамічним контентом
 - **Захищені маршрути** з ролями (admin, editor, moderator, user)
+- **Методи пошуку**: `getByRole()`, `getByAuthor()`, `getByCategory()`, `getByTags()`
 
 ### **Тестові акаунти**
 - `admin@example.com` / `admin123` - повний доступ
@@ -211,8 +263,8 @@ npm start
 ### **Ключові файли для курсорів та агрегації**
 
 #### **Моделі з новими методами:**
-- `src/models/User.mjs` - методи `getAllWithCursor()` та `getStatistics()`
-- `src/models/Article.mjs` - методи `getAllWithCursor()` та `getStatistics()`
+- `src/models/User.mjs` - методи `getAllWithCursor()`, `getStatistics()`, `findByEmail()`, `getByRole()`
+- `src/models/Article.mjs` - методи `getAllWithCursor()`, `getStatistics()`, `getByAuthor()`, `getByCategory()`, `getByTags()`
 
 #### **Контролери з новою логікою:**
 - `src/controllers/UserController.mjs` - `getUsersWithCursor()`, `getUserStatistics()`
@@ -221,6 +273,11 @@ npm start
 #### **Маршрути для тестування:**
 - `src/routes/users.mjs` - роути `/cursor` та `/statistics`
 - `src/routes/articles.mjs` - роути `/cursor` та `/statistics`
+
+#### **Додаткові можливості:**
+- **Passport.js інтеграція**: `UserModel.findByEmail()` для автентифікації
+- **Фільтрація даних**: методи пошуку за ролями, авторами, категоріями, тегами
+- **Безпечні утиліти**: `src/utils/userUtils.mjs` для роботи з req.user
 
 ### **Environment налаштування**
 
