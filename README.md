@@ -131,9 +131,9 @@ GET http://localhost:3000/users/cursor
 **Очікувана відповідь:**
 ```json
 {
-  "success": true,
-  "message": "Користувачі отримані через курсор",
-  "data": [
+  "message": "Отримано 13 користувачів за допомогою курсора",
+  "method": "cursor",
+  "users": [
     {
       "_id": "ObjectId",
       "id": 1,
@@ -151,6 +151,22 @@ GET http://localhost:3000/users/cursor
 GET http://localhost:3000/articles/cursor
 ```
 
+**Очікувана відповідь:**
+```json
+{
+  "message": "Отримано 11 статей за допомогою курсора",
+  "method": "cursor",
+  "articles": [
+    {
+      "_id": "ObjectId",
+      "title": "Стаття про MongoDB",
+      "author": "John Doe",
+      "createdAt": "2024-10-24T10:00:00.000Z"
+    }
+  ]
+}
+```
+
 ### **Тестування агрегаційних запитів**
 
 **Статистика користувачів:**
@@ -158,9 +174,44 @@ GET http://localhost:3000/articles/cursor
 GET http://localhost:3000/users/statistics
 ```
 
+**Очікувана відповідь:**
+```json
+{
+  "message": "Статистика користувачів",
+  "method": "aggregation",
+  "statistics": {
+    "totalUsers": 13,
+    "activeUsers": 11,
+    "byRole": [
+      { "_id": "admin", "count": 2 },
+      { "_id": "user", "count": 8 },
+      { "_id": "editor", "count": 2 },
+      { "_id": "moderator", "count": 1 }
+    ]
+  }
+}
+```
+
 **Статистика статей:**
 ```bash
 GET http://localhost:3000/articles/statistics
+```
+
+**Очікувана відповідь:**
+```json
+{
+  "message": "Статистика статей",
+  "method": "aggregation",
+  "statistics": {
+    "totalArticles": 11,
+    "publishedArticles": 9,
+    "byAuthor": [
+      { "_id": "John Doe", "count": 3 },
+      { "_id": "Jane Smith", "count": 2 },
+      { "_id": "Bob Wilson", "count": 2 }
+    ]
+  }
+}
 ```
 ```
 
